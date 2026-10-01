@@ -1,0 +1,10 @@
+name: MessyJournal
+description: $description
+prefix: Meßy's Journal
+version: '${version}'
+
+main: dev.messyprincy.messyJournal.MessyJournal
+api-version: '26.3'
+load: POSTWORLD
+
+authors: [ MessyPrincy ]
