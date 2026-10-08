@@ -8,9 +8,21 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 
 public class InventoryListener implements Listener {
+
+    @EventHandler
+    public void onInventoryDrag(InventoryDragEvent e) {
+        Inventory inventory = e.getInventory();
+
+        if (!(inventory.getHolder(false) instanceof InventoryGui)) {
+            return;
+        }
+
+        e.setCancelled(true);
+    }
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e) {
@@ -26,22 +38,30 @@ public class InventoryListener implements Listener {
 
         e.setCancelled(true);
 
+        if (!(e.getClickedInventory().equals(journalInventory.getInventory()))) {
+            return;
+        }
+
         JournalEntry entry = journalInventory.getEntry(e.getSlot());
         if (entry == null) {
             return;
         }
 
         if (entry.getId().equals("exit")) {
-            openInventory(player, journalInventory.getParentInventory());
+            if (journalInventory.hasParent()) {
+                openInventory(player, journalInventory.getParentInventoryGui().getInventory());
+            } else {
+                player.closeInventory();
+            }
         }
 
         if (CategoryManager.get().containsKey(entry.getId())) {
-            openInventory(player, createInventoryGui(entry, journalInventory.getInventory()).getInventory());
+            openInventory(player, createInventoryGui(entry, journalInventory).getInventory());
         }
 
     }
 
-    private InventoryGui createInventoryGui(JournalEntry category, Inventory parent) {
+    private InventoryGui createInventoryGui(JournalEntry category, InventoryGui parent) {
         InventoryGui inventoryGui = new InventoryGui(category.getName(), 54, parent);
         inventoryGui.fillInventory(ItemManager.get(category.getId()));
 

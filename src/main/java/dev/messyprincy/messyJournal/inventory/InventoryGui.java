@@ -3,7 +3,6 @@ package dev.messyprincy.messyJournal.inventory;
 import dev.messyprincy.messyJournal.logging.LoggerManager;
 import dev.messyprincy.messyJournal.interfaces.JournalEntry;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
@@ -20,25 +19,31 @@ import static org.bukkit.Bukkit.createInventory;
 
 public class InventoryGui implements InventoryHolder {
     private final Inventory inventory;
-    private Inventory parentInventory = null;
+    private final InventoryGui parentInventory;
     private final Map<Integer, JournalEntry> items;
     private static final LoggerManager LOGGER = new LoggerManager();
+    private static final int EXIT_SLOT = 8;
 
     public InventoryGui(String name, int size) {
-        this.inventory = createInventory(this, size, LegacyComponentSerializer.legacyAmpersand().deserialize(name));
-        this.items = new HashMap<>();
+        this(name, size, null);
     }
 
-    public InventoryGui(String name, int size, Inventory parentInventory) {
+    public InventoryGui(String name, int size, InventoryGui parentInventory) {
         this.inventory = createInventory(this, size, LegacyComponentSerializer.legacyAmpersand().deserialize(name));
         this.items = new HashMap<>();
         this.parentInventory = parentInventory;
+        setExitItem();
     }
 
     public void fillInventory(Map<String, JournalEntry> entries) {
         for (JournalEntry entry : entries.values()) {
+            if (entry.getSlot() == EXIT_SLOT) {
+                LOGGER.errorLog("Tried to overwrite the exit item. Skipping entry");
+                continue;
+            }
+
             items.put(entry.getSlot(), entry);
-            this.inventory.setItem(entry.getSlot(), createItemStack(entry.getMaterial(), entry.getName(), entry.getLore()));
+            inventory.setItem(entry.getSlot(), createItemStack(entry.getMaterial(), entry.getName(), entry.getLore()));
         }
     }
 
@@ -50,11 +55,28 @@ public class InventoryGui implements InventoryHolder {
         return items.get(key);
     }
 
-    public Inventory getParentInventory() {return parentInventory;}
+    public InventoryGui getParentInventoryGui() {return parentInventory;}
+
+    public boolean hasParent() {
+        return parentInventory != null;
+    }
 
     @Override
     public Inventory getInventory() {
         return inventory;
+    }
+
+    private void setExitItem() {
+        Material material = Material.RED_STAINED_GLASS_PANE;
+        String displayName = hasParent() ? "&c&l< Back" : "&c&lClose";
+        List<String> lore = List.of(
+                hasParent() ? "&7Click to return to the previous page." : "&7Click to close"
+        );
+
+        JournalEntry entry = new JournalCategory("exit", material.name(), displayName, lore, EXIT_SLOT);
+
+        inventory.setItem(EXIT_SLOT, createItemStack(entry.getMaterial(), entry.getName(), entry.getLore()));
+        items.put(EXIT_SLOT, entry);
     }
 
     private ItemStack createItemStack(String material, String name, List<String> lore) {
