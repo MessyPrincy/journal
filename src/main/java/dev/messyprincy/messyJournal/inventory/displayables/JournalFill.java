@@ -1,29 +1,20 @@
-package dev.messyprincy.messyJournal.inventory;
+package dev.messyprincy.messyJournal.inventory.displayables;
 
-import dev.messyprincy.messyJournal.interfaces.JournalEntry;
+import dev.messyprincy.messyJournal.interfaces.Displayable;
 
 import java.util.List;
 
-public class JournalItem implements JournalEntry {
-    private final String id;
+public class JournalFill implements Displayable {
     private final int slot;
     private final String material;
     private final String name;
     private final List<String> lore;
-    private final String parentId;
 
-    public JournalItem(String id, String material, String name, List<String> lore, int slot, String parentId) {
-        this.id = id;
+    public JournalFill (String material, String name, List<String> lore, int slot) {
         this.material = material;
         this.name = name;
         this.lore = lore;
         this.slot = slot;
-        this.parentId = parentId;
-    }
-
-    @Override
-    public String getId() {
-        return id;
     }
 
     @Override
@@ -44,9 +35,5 @@ public class JournalItem implements JournalEntry {
     @Override
     public List<String> getLore() {
         return lore;
-    }
-
-    public String getParentId() {
-        return parentId;
     }
 }

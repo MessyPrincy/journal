@@ -1,0 +1,23 @@
+# How to create items:
+# type:     CATEGORY or FILL
+# id:       CATEGORY only. Must be unique, lowercase, no spaces.
+# material: A valid Minecraft material name, e.g. PAPER
+# name:     Display name. Supports "&" color codes. Always keep the quotes.
+# lore:     List of lines under the name. Use [] for none.
+# slots:    List of inventory slots, 0 to 53. Slot 8 is reserved for the exit button.
+#           CATEGORY type must only have one slot.
+
+entries:
+  - type: FILL
+    material: GRAY_STAINED_GLASS_PANE
+    name: " "
+    lore: []
+    slots: [0, 1, 2, 3, 4, 5, 6, 7]
+
+  - type: CATEGORY
+    id: example_category
+    material: DIRT
+    name: "example"
+    lore:
+      - "example"
+    slots: [11]

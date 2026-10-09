@@ -12,10 +12,10 @@ public class LoggerManager {
     }
 
     public void successLog(String text) {
-        logger.info("[Meßy's Journal]" + text);
+        logger.info("[Meßy's Journal] " + text);
     }
 
     public void errorLog(String text) {
-        logger.warning("[Meßy's Journal]" + text);
+        logger.warning("[Meßy's Journal] " + text);
     }
 }

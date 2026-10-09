@@ -3,7 +3,7 @@ package dev.messyprincy.messyJournal.commands;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import dev.messyprincy.messyJournal.inventory.InventoryGui;
-import dev.messyprincy.messyJournal.inventory.managers.CategoryManager;
+import dev.messyprincy.messyJournal.inventory.config.JournalConfigManager;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import org.bukkit.command.CommandSender;
@@ -25,7 +25,9 @@ public class JournalCommands {
                    }
 
                    InventoryGui journal = new InventoryGui("Journal", 54);
-                   journal.fillInventory(CategoryManager.get());
+
+                   journal.fillInventory(JournalConfigManager.get().fillItems());
+                   journal.fillInventory(JournalConfigManager.get().categories().values());
                    player.openInventory(journal.getInventory());
 
                    return Command.SINGLE_SUCCESS;

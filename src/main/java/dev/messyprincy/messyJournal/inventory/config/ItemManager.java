@@ -1,16 +1,16 @@
-package dev.messyprincy.messyJournal.inventory.managers;
+package dev.messyprincy.messyJournal.inventory.config;
 
-import dev.messyprincy.messyJournal.interfaces.JournalEntry;
-import dev.messyprincy.messyJournal.inventory.JournalItem;
+import dev.messyprincy.messyJournal.interfaces.Displayable;
+import dev.messyprincy.messyJournal.inventory.displayables.JournalItem;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class ItemManager {
-    private static Map<String, Map<String, JournalEntry>> entries;
+    private static Map<String, Map<String, Displayable>> entries;
 
-    public static Map<String, JournalEntry> get(String parent) {
+    public static Map<String, Displayable> get(String parent) {
         if (entries == null) {
             load();
         }

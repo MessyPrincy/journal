@@ -1,11 +1,5 @@
 package dev.messyprincy.messyJournal.interfaces;
 
-import java.util.List;
-
-public interface JournalEntry {
+public interface JournalEntry extends Displayable {
     String getId();
-    int getSlot();
-    String getMaterial();
-    String getName();
-    List<String> getLore();
 }

@@ -2,14 +2,16 @@ package dev.messyprincy.messyJournal.listeners;
 
 import dev.messyprincy.messyJournal.inventory.InventoryGui;
 import dev.messyprincy.messyJournal.interfaces.JournalEntry;
-import dev.messyprincy.messyJournal.inventory.managers.CategoryManager;
-import dev.messyprincy.messyJournal.inventory.managers.ItemManager;
+import dev.messyprincy.messyJournal.inventory.config.JournalConfigManager;
+import dev.messyprincy.messyJournal.inventory.config.ItemManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
+
+import java.util.Objects;
 
 public class InventoryListener implements Listener {
 
@@ -38,7 +40,7 @@ public class InventoryListener implements Listener {
 
         e.setCancelled(true);
 
-        if (!(e.getClickedInventory().equals(journalInventory.getInventory()))) {
+        if (!(Objects.equals(e.getClickedInventory(), journalInventory.getInventory()))) {
             return;
         }
 
@@ -53,9 +55,10 @@ public class InventoryListener implements Listener {
             } else {
                 player.closeInventory();
             }
+            return;
         }
 
-        if (CategoryManager.get().containsKey(entry.getId())) {
+        if (JournalConfigManager.get().categories().containsKey(entry.getId())) {
             openInventory(player, createInventoryGui(entry, journalInventory).getInventory());
         }
 
@@ -63,7 +66,7 @@ public class InventoryListener implements Listener {
 
     private InventoryGui createInventoryGui(JournalEntry category, InventoryGui parent) {
         InventoryGui inventoryGui = new InventoryGui(category.getName(), 54, parent);
-        inventoryGui.fillInventory(ItemManager.get(category.getId()));
+        inventoryGui.fillInventory(ItemManager.get(category.getId()).values());
 
         return inventoryGui;
     }

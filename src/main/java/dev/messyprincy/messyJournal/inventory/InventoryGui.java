@@ -1,5 +1,7 @@
 package dev.messyprincy.messyJournal.inventory;
 
+import dev.messyprincy.messyJournal.interfaces.Displayable;
+import dev.messyprincy.messyJournal.inventory.displayables.JournalCategory;
 import dev.messyprincy.messyJournal.logging.LoggerManager;
 import dev.messyprincy.messyJournal.interfaces.JournalEntry;
 import net.kyori.adventure.text.Component;
@@ -10,10 +12,7 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.bukkit.Bukkit.createInventory;
 
@@ -35,36 +34,29 @@ public class InventoryGui implements InventoryHolder {
         setExitItem();
     }
 
-    public void fillInventory(Map<String, JournalEntry> entries) {
-        for (JournalEntry entry : entries.values()) {
+    public void fillInventory(Collection<? extends Displayable> entries) {
+        for (Displayable entry : entries) {
             if (entry.getSlot() == EXIT_SLOT) {
                 LOGGER.errorLog("Tried to overwrite the exit item. Skipping entry");
                 continue;
             }
 
-            items.put(entry.getSlot(), entry);
             inventory.setItem(entry.getSlot(), createItemStack(entry.getMaterial(), entry.getName(), entry.getLore()));
+
+            if (entry instanceof JournalEntry journalEntry) {
+                items.put(entry.getSlot(), journalEntry);
+            }
         }
     }
 
-    public JournalEntry getEntry(int key) {
-        if (!items.containsKey(key)) {
-            return null;
-        }
-
-        return items.get(key);
-    }
+    public JournalEntry getEntry(int key) {return items.get(key);}
 
     public InventoryGui getParentInventoryGui() {return parentInventory;}
 
-    public boolean hasParent() {
-        return parentInventory != null;
-    }
+    public boolean hasParent() {return parentInventory != null;}
 
     @Override
-    public Inventory getInventory() {
-        return inventory;
-    }
+    public Inventory getInventory() {return inventory;}
 
     private void setExitItem() {
         Material material = Material.RED_STAINED_GLASS_PANE;
