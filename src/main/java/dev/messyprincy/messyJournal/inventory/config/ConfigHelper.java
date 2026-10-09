@@ -83,7 +83,7 @@ public final class ConfigHelper {
             try {
                 int integer = Integer.parseInt(string);
 
-                if ((integer < 0 || integer > 53)) {
+                if ((integer < 0 || integer > 54)) {
                     continue;
                 }
 
