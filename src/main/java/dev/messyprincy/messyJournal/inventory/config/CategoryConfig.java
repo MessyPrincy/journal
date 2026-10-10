@@ -6,10 +6,9 @@ import dev.messyprincy.messyJournal.inventory.displayables.JournalFill;
 import java.util.List;
 import java.util.Map;
 
-public record JournalConfig(List<JournalFill> fillItems, Map<String, JournalEntry> categories, Map<String, CategoryConfig> categoriesConfigs) {
-    public JournalConfig {
+public record CategoryConfig(List<JournalFill> fillItems, Map<String, JournalEntry> items) {
+    public CategoryConfig {
         fillItems = List.copyOf(fillItems);
-        categories = Map.copyOf(categories);
-        categoriesConfigs = Map.copyOf(categoriesConfigs);
+        items = Map.copyOf(items);
     }
 }

@@ -11,14 +11,16 @@ public class JournalItem implements JournalEntry {
     private final String name;
     private final List<String> lore;
     private final String parentId;
+    private final boolean unlockedByDefault;
 
-    public JournalItem(String id, String material, String name, List<String> lore, int slot, String parentId) {
+    public JournalItem(String id, String material, String name, List<String> lore, int slot, String parentId, boolean unlockedByDefault) {
         this.id = id;
         this.material = material;
         this.name = name;
         this.lore = lore;
         this.slot = slot;
         this.parentId = parentId;
+        this.unlockedByDefault = unlockedByDefault;
     }
 
     @Override
@@ -48,5 +50,9 @@ public class JournalItem implements JournalEntry {
 
     public String getParentId() {
         return parentId;
+    }
+
+    public boolean isUnlockedByDefault() {
+        return unlockedByDefault;
     }
 }

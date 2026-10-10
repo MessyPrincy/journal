@@ -1,0 +1,16 @@
+# How to create items:
+# type:               ITEM or FILL
+# id:                 ITEM only. Must be unique, lowercase, no spaces.
+# material:           A valid Minecraft material name, e.g. PAPER
+# name:               Display name. Supports "&" color codes. Always keep the quotes.
+# lore:               List of lines under the name. Use [] for none.
+# slots:              List of inventory slots, 0 to 53. Slot 8 is reserved for the exit button.
+#                     ITEM type must only have one slot.
+# unlockedByDefault:  A boolean that states whether the entry is unlocked by default or not.
+
+entries:
+  - type: FILL
+    material: GRAY_STAINED_GLASS_PANE
+    name: " "
+    lore: []
+    slots: [0, 1, 2, 3, 4, 5, 6, 7, 9, 17, 18, 26, 27, 35, 36, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53]

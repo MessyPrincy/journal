@@ -3,7 +3,6 @@ package dev.messyprincy.messyJournal.listeners;
 import dev.messyprincy.messyJournal.inventory.InventoryGui;
 import dev.messyprincy.messyJournal.interfaces.JournalEntry;
 import dev.messyprincy.messyJournal.inventory.config.JournalConfigManager;
-import dev.messyprincy.messyJournal.inventory.config.ItemManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -66,7 +65,8 @@ public class InventoryListener implements Listener {
 
     private InventoryGui createInventoryGui(JournalEntry category, InventoryGui parent) {
         InventoryGui inventoryGui = new InventoryGui(category.getName(), 54, parent);
-        inventoryGui.fillInventory(ItemManager.get(category.getId()).values());
+        inventoryGui.fillInventory(JournalConfigManager.getCategoryConfig(category.getId()).fillItems());
+        inventoryGui.fillInventory(JournalConfigManager.getCategoryConfig(category.getId()).items().values());
 
         return inventoryGui;
     }

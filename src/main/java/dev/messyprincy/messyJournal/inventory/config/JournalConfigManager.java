@@ -12,11 +12,15 @@ import java.io.File;
 import java.util.*;
 
 public class JournalConfigManager {
-    private static volatile JournalConfig journalConfig = new JournalConfig(List.of(), Map.of());
+    private static volatile JournalConfig journalConfig = new JournalConfig(List.of(), Map.of(), Map.of());
     private static final LoggerManager LOGGER = new LoggerManager();
 
     public static JournalConfig get() {
         return journalConfig;
+    }
+
+    public static CategoryConfig getCategoryConfig(String parentId) {
+        return journalConfig.categoriesConfigs().getOrDefault(parentId, new CategoryConfig(List.of(), Map.of()));
     }
 
     public static void load() {
@@ -42,28 +46,19 @@ public class JournalConfigManager {
                 continue;
             }
 
-            String material = ConfigHelper.readStringStrict(entry.get("material"));
-            if (material == null) {
-                LOGGER.errorLog(entryString + " is missing a material");
+            if (entryType == EntryType.ITEM) {
+                LOGGER.errorLog(entryString + " type is invalid");
                 continue;
             }
 
-            String name = ConfigHelper.readString(entry.get("name"));
-            if (name == null) {
-                LOGGER.errorLog(entryString + " error in name");
-            }
-
-            List<String> lore = ConfigHelper.readLore(entry.get("lore"));
-
-            List<Integer> slots = ConfigHelper.readSlots(entry.get("slots"));
-            if (slots.isEmpty()) {
-                LOGGER.errorLog(entryString + " error in slots");
+            ParsedEntry parsedEntry = ConfigHelper.validateEntry(entry, entryString);
+            if (parsedEntry == null) {
                 continue;
             }
 
             if (entryType.equals(EntryType.FILL)) {
-                for (int slot : slots) {
-                    localFills.add(new JournalFill(material, name, lore, slot));
+                for (int slot : parsedEntry.slots()) {
+                    localFills.add(new JournalFill(parsedEntry.material(), parsedEntry.name(), parsedEntry.lore(), slot));
                 }
             } else if (entryType.equals(EntryType.CATEGORY)) {
                 String id = ConfigHelper.readStringStrict(entry.get("id"));
@@ -85,10 +80,12 @@ public class JournalConfigManager {
                     continue;
                 }
 
-                localCategory.put(id, new JournalCategory(id, material, name, lore, slots.getFirst()));
+                localCategory.put(id, new JournalCategory(id, parsedEntry.material(), parsedEntry.name(), parsedEntry.lore(), parsedEntry.slots().getFirst()));
             }
         }
 
-        journalConfig = new JournalConfig(localFills, localCategory);
+        Map<String, CategoryConfig> categoriesConfigs = CategoryConfigLoader.loadAll(localCategory.keySet());
+
+        journalConfig = new JournalConfig(localFills, localCategory, categoriesConfigs);
     }
 }
