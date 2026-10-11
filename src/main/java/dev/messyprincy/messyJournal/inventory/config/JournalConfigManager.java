@@ -75,7 +75,7 @@ public class JournalConfigManager {
                     continue;
                 }
 
-                if (journalConfig.categories().containsKey(id)) {
+                if (journalConfig.categories().containsKey(id) || localCategory.containsKey(id)) {
                     LOGGER.errorLog(entryString + " this id already exists");
                     continue;
                 }

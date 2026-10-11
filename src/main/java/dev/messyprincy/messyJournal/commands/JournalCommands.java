@@ -24,7 +24,7 @@ public class JournalCommands {
                        return Command.SINGLE_SUCCESS;
                    }
 
-                   InventoryGui journal = new InventoryGui("Journal", 54);
+                   InventoryGui journal = new InventoryGui("Journal", 54, player);
 
                    journal.fillInventory(JournalConfigManager.get().fillItems());
                    journal.fillInventory(JournalConfigManager.get().categories().values());

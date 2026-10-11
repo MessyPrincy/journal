@@ -58,13 +58,13 @@ public class InventoryListener implements Listener {
         }
 
         if (JournalConfigManager.get().categories().containsKey(entry.getId())) {
-            openInventory(player, createInventoryGui(entry, journalInventory).getInventory());
+            openInventory(player, createInventoryGui(entry, journalInventory, player).getInventory());
         }
 
     }
 
-    private InventoryGui createInventoryGui(JournalEntry category, InventoryGui parent) {
-        InventoryGui inventoryGui = new InventoryGui(category.getName(), 54, parent);
+    private InventoryGui createInventoryGui(JournalEntry category, InventoryGui parent, Player player) {
+        InventoryGui inventoryGui = new InventoryGui(category.getName(), 54, player, parent);
         inventoryGui.fillInventory(JournalConfigManager.getCategoryConfig(category.getId()).fillItems());
         inventoryGui.fillInventory(JournalConfigManager.getCategoryConfig(category.getId()).items().values());
 

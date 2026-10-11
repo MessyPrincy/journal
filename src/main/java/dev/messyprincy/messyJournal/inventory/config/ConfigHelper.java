@@ -104,7 +104,7 @@ public final class ConfigHelper {
             try {
                 int integer = Integer.parseInt(string);
 
-                if ((integer < 0 || integer > 54)) {
+                if ((integer < 0 || integer > 53)) {
                     continue;
                 }
 
@@ -134,7 +134,7 @@ public final class ConfigHelper {
 
         String name = ConfigHelper.readString(entry.get("name"));
         if (name == null) {
-            LOGGER.errorLog(entryString + " error in name");
+            LOGGER.errorLog(entryString + " missing name. Defaulting to block name");
         }
 
         List<String> lore = ConfigHelper.readLore(entry.get("lore"));
