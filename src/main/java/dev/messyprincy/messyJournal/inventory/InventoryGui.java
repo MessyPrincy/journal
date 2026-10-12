@@ -6,7 +6,7 @@ import dev.messyprincy.messyJournal.inventory.displayables.JournalFill;
 import dev.messyprincy.messyJournal.inventory.displayables.JournalItem;
 import dev.messyprincy.messyJournal.logging.LoggerManager;
 import dev.messyprincy.messyJournal.interfaces.JournalEntry;
-import dev.messyprincy.messyJournal.progress.ProgressHelper;
+import dev.messyprincy.messyJournal.progress.PlayerProgressHelper;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Material;
@@ -44,7 +44,7 @@ public class InventoryGui implements InventoryHolder {
     }
 
     public void fillInventory(Collection<? extends Displayable> entries) {
-        ProgressHelper progress = new ProgressHelper(player);
+        PlayerProgressHelper progress = new PlayerProgressHelper(player);
         for (Displayable entry : entries) {
             int entrySlot = entry.getSlot();
             if (entrySlot == EXIT_SLOT) {

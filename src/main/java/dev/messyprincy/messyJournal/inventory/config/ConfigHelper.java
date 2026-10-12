@@ -1,6 +1,7 @@
 package dev.messyprincy.messyJournal.inventory.config;
 
 import dev.messyprincy.messyJournal.MessyJournal;
+import dev.messyprincy.messyJournal.enums.DiscoverType;
 import dev.messyprincy.messyJournal.enums.EntryType;
 import dev.messyprincy.messyJournal.logging.LoggerManager;
 
@@ -48,7 +49,23 @@ public final class ConfigHelper {
         return string;
     }
 
-    public static EntryType readType(Object object) {
+    public static DiscoverType readDiscoverType(Object object) {
+        String string = readStringStrict(object);
+
+        if (string == null) {
+            return null;
+        }
+
+        string = string.toUpperCase(Locale.ROOT);
+
+        try {
+            return DiscoverType.valueOf(string);
+        } catch (IllegalArgumentException _) {
+            return null;
+        }
+    }
+
+    public static EntryType readEntryType(Object object) {
         String string = readStringStrict(object);
 
         if (string == null) {

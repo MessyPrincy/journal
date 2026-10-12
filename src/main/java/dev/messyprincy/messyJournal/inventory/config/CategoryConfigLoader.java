@@ -1,6 +1,7 @@
 package dev.messyprincy.messyJournal.inventory.config;
 
 import dev.messyprincy.messyJournal.MessyJournal;
+import dev.messyprincy.messyJournal.enums.DiscoverType;
 import dev.messyprincy.messyJournal.enums.EntryType;
 import dev.messyprincy.messyJournal.interfaces.JournalEntry;
 import dev.messyprincy.messyJournal.inventory.displayables.JournalFill;
@@ -17,23 +18,23 @@ import java.util.*;
 
 public final class CategoryConfigLoader {
 
-    public static Map<String, CategoryConfig> loadAll(Collection<String> ids) {
+    public static Map<String, CategoryConfig> loadAll(Map<String, JournalEntry> categories) {
         Map<String, CategoryConfig> categoryConfigMap = new HashMap<>();
-        for (String id : ids) {
-            Optional<Path> filePath = ensureCategoryFile(id);
+        for (Map.Entry<String, JournalEntry> entry : categories.entrySet()) {
+            Optional<Path> filePath = ensureCategoryFile(entry.getKey());
             if (filePath.isEmpty()) {
-                categoryConfigMap.put(id, new CategoryConfig(List.of(), Map.of()));
+                categoryConfigMap.put(entry.getKey(), new CategoryConfig(List.of(), Map.of()));
                 continue;
             }
 
-            CategoryConfig categoryConfig = createCategoryConfig(filePath.get(), id);
+            CategoryConfig categoryConfig = createCategoryConfig(filePath.get(), entry);
 
             if (categoryConfig == null) {
-                categoryConfigMap.put(id, new CategoryConfig(List.of(), Map.of()));
+                categoryConfigMap.put(entry.getKey(), new CategoryConfig(List.of(), Map.of()));
                 continue;
             }
 
-            categoryConfigMap.put(id, categoryConfig);
+            categoryConfigMap.put(entry.getKey(), categoryConfig);
         }
 
         return categoryConfigMap;
@@ -71,7 +72,7 @@ public final class CategoryConfigLoader {
         return filePath;
     }
 
-    private static CategoryConfig createCategoryConfig(Path filePath, String parentId) {
+    private static CategoryConfig createCategoryConfig(Path filePath, Map.Entry<String, JournalEntry> category) {
         File file = new File(filePath.toFile().toURI());
         YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
         List<Map<?, ?>> entries = yaml.getMapList("entries");
@@ -86,9 +87,9 @@ public final class CategoryConfigLoader {
 
         for (int i = 0; i < entries.size(); i++) {
             Map<?, ?> entry = entries.get(i);
-            String entryString = ("Entry #" + (i + 1) + " in " + parentId);
+            String entryString = ("Entry #" + (i + 1) + " in " + category.getKey());
 
-            EntryType entryType = ConfigHelper.readType(entry.get("type"));
+            EntryType entryType = ConfigHelper.readEntryType(entry.get("type"));
             if (entryType == null) {
                 LoggerManager.errorLog(entryString + " error in type");
                 continue;
@@ -106,31 +107,47 @@ public final class CategoryConfigLoader {
 
             if (entryType.equals(EntryType.FILL)) {
                 for (int slot : parsedEntry.slots()) {
-                    localFills.add(new JournalFill(parsedEntry.material(), parsedEntry.name(), parsedEntry.lore(), slot));
+                    localFills.add(new JournalFill(
+                            parsedEntry.material(),
+                            parsedEntry.name(),
+                            parsedEntry.lore(),
+                            slot));
                 }
             } else if (entryType.equals(EntryType.ITEM)) {
-                String id = ConfigHelper.readStringStrict(entry.get("id"));
+                String id = ConfigHelper.readStringStrict(entry.get("id".toLowerCase(Locale.ROOT)));
 
                 if (id == null) {
                     LoggerManager.errorLog(entryString + " error in id");
                     continue;
                 }
 
-                id = id.toLowerCase(Locale.ROOT);
-
                 if (id.equals("exit")) {
                     LoggerManager.errorLog(entryString + " id is not allowed to be exit");
                     continue;
                 }
 
-                if (localItems.containsKey(id) || parentId.equals(id)) {
+                if (localItems.containsKey(id) || category.getKey().equals(id)) {
                     LoggerManager.errorLog(entryString + " this id already exists");
                     continue;
                 }
 
                 boolean unlockedByDefault = ConfigHelper.readBoolean(entry.get("unlockedByDefault"));
 
-                localItems.put(id, new JournalItem(id, parsedEntry.material(), parsedEntry.name(), parsedEntry.lore(), parsedEntry.slots().getFirst(), parentId, unlockedByDefault));
+                DiscoverType discoverType = ConfigHelper.readDiscoverType(entry.get("discovered_on"));
+                if (discoverType == null) {
+                    LoggerManager.errorLog(entryString + " error in discovered_on, setting to default");
+                    discoverType = DiscoverType.COMMAND;
+                }
+
+                localItems.put(id, new JournalItem(
+                        id,
+                        parsedEntry.material(),
+                        parsedEntry.name(),
+                        parsedEntry.lore(),
+                        parsedEntry.slots().getFirst(),
+                        category.getValue(),
+                        unlockedByDefault,
+                        discoverType));
             }
 
         }

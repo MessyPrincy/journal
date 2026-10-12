@@ -39,7 +39,7 @@ public class JournalConfigManager {
             Map<?, ?> entry = entries.get(i);
             String entryString = ("Entry #" + (i+1));
 
-            EntryType entryType = ConfigHelper.readType(entry.get("type"));
+            EntryType entryType = ConfigHelper.readEntryType(entry.get("type"));
             if (entryType == null) {
                 LoggerManager.errorLog(entryString + " error in type");
                 continue;
@@ -57,7 +57,11 @@ public class JournalConfigManager {
 
             if (entryType.equals(EntryType.FILL)) {
                 for (int slot : parsedEntry.slots()) {
-                    localFills.add(new JournalFill(parsedEntry.material(), parsedEntry.name(), parsedEntry.lore(), slot));
+                    localFills.add(new JournalFill(
+                            parsedEntry.material(),
+                            parsedEntry.name(),
+                            parsedEntry.lore(),
+                            slot));
                 }
             } else if (entryType.equals(EntryType.CATEGORY)) {
                 String id = ConfigHelper.readStringStrict(entry.get("id"));
@@ -79,11 +83,16 @@ public class JournalConfigManager {
                     continue;
                 }
 
-                localCategory.put(id, new JournalCategory(id, parsedEntry.material(), parsedEntry.name(), parsedEntry.lore(), parsedEntry.slots().getFirst()));
+                localCategory.put(id, new JournalCategory(
+                        id,
+                        parsedEntry.material(),
+                        parsedEntry.name(),
+                        parsedEntry.lore(),
+                        parsedEntry.slots().getFirst()));
             }
         }
 
-        Map<String, CategoryConfig> categoriesConfigs = CategoryConfigLoader.loadAll(localCategory.keySet());
+        Map<String, CategoryConfig> categoriesConfigs = CategoryConfigLoader.loadAll(localCategory);
 
         journalConfig = new JournalConfig(localFills, localCategory, categoriesConfigs);
     }

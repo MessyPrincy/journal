@@ -7,7 +7,7 @@ import dev.messyprincy.messyJournal.inventory.InventoryGui;
 import dev.messyprincy.messyJournal.inventory.config.JournalConfigManager;
 import dev.messyprincy.messyJournal.inventory.displayables.JournalItem;
 import dev.messyprincy.messyJournal.logging.LoggerManager;
-import dev.messyprincy.messyJournal.progress.ProgressHelper;
+import dev.messyprincy.messyJournal.progress.PlayerProgressHelper;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
@@ -83,9 +83,15 @@ public class JournalCommands {
                                                         return Command.SINGLE_SUCCESS;
                                                     }
 
-                                                    ProgressHelper progress = new ProgressHelper(target);
+                                                    PlayerProgressHelper progress = new PlayerProgressHelper(target);
                                                     progress.unlockItem(item);
 
+                                                    LoggerManager.sendSuccessMessage(sender, "Successfully unlocked " + progress.createIdentifier(item) + " for " + target.getName());
+                                                    LoggerManager.sendUnlockMessage(
+                                                            target,
+                                                            item.getName(),
+                                                            item.getParent().getName()
+                                                    );
                                                     return Command.SINGLE_SUCCESS;
                                                 }))
                                 ))

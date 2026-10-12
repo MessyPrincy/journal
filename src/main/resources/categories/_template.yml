@@ -7,6 +7,8 @@
 # slots:              List of inventory slots, 0 to 53. Slot 8 is reserved for the exit button.
 #                     ITEM type must only have one slot.
 # unlockedByDefault:  A boolean that states whether the entry is unlocked by default or not.
+# discovered_on:      COMMAND or INTERACT
+#                     Will default to COMMAND
 
 entries:
   - type: FILL
