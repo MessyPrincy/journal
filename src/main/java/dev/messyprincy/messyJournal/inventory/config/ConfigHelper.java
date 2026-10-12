@@ -2,8 +2,6 @@ package dev.messyprincy.messyJournal.inventory.config;
 
 import dev.messyprincy.messyJournal.MessyJournal;
 import dev.messyprincy.messyJournal.enums.EntryType;
-import dev.messyprincy.messyJournal.inventory.displayables.JournalFill;
-import dev.messyprincy.messyJournal.inventory.displayables.JournalItem;
 import dev.messyprincy.messyJournal.logging.LoggerManager;
 
 import java.io.File;
@@ -13,7 +11,6 @@ import java.util.*;
 public final class ConfigHelper {
     private static final String CATEGORY_FOLDER = "categories";
     private static final String FILE_SUFFIX = ".yml";
-    private static final LoggerManager LOGGER = new LoggerManager();
 
     public static Optional<Path> categoryFilePath(String categoryId) {
         File dataFolder = MessyJournal.instance.getDataFolder();
@@ -128,20 +125,20 @@ public final class ConfigHelper {
     public static ParsedEntry validateEntry(Map<?, ?> entry, String entryString) {
         String material = ConfigHelper.readStringStrict(entry.get("material"));
         if (material == null) {
-            LOGGER.errorLog(entryString + " is missing a material");
+            LoggerManager.errorLog(entryString + " is missing a material");
             return null;
         }
 
         String name = ConfigHelper.readString(entry.get("name"));
         if (name == null) {
-            LOGGER.errorLog(entryString + " missing name. Defaulting to block name");
+            LoggerManager.errorLog(entryString + " missing name. Defaulting to block name");
         }
 
         List<String> lore = ConfigHelper.readLore(entry.get("lore"));
 
         List<Integer> slots = ConfigHelper.readSlots(entry.get("slots"));
         if (slots.isEmpty()) {
-            LOGGER.errorLog(entryString + " error in slots");
+            LoggerManager.errorLog(entryString + " error in slots");
             return null;
         }
 

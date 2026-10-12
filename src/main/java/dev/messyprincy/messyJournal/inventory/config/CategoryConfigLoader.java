@@ -16,7 +16,6 @@ import java.nio.file.Path;
 import java.util.*;
 
 public final class CategoryConfigLoader {
-    private static final LoggerManager LOGGER = new LoggerManager();
 
     public static Map<String, CategoryConfig> loadAll(Collection<String> ids) {
         Map<String, CategoryConfig> categoryConfigMap = new HashMap<>();
@@ -44,14 +43,14 @@ public final class CategoryConfigLoader {
         Optional<Path> filePath = ConfigHelper.categoryFilePath(id);
 
         if (filePath.isEmpty()) {
-            LOGGER.errorLog("Error with creating the file path for " + id);
+            LoggerManager.errorLog("Error with creating the file path for " + id);
             return Optional.empty();
         }
 
         try {
             Files.createDirectories(filePath.get().getParent());
         } catch (IOException e) {
-            LOGGER.errorLog("Could not create directory for categories: " + e.getMessage());
+            LoggerManager.errorLog("Could not create directory for categories: " + e.getMessage());
             return Optional.empty();
         }
 
@@ -59,12 +58,12 @@ public final class CategoryConfigLoader {
         if (!(Files.exists(filePath.get()))) {
             try (InputStream template = MessyJournal.instance.getResource(MessyJournal.CATEGORY_TEMPLATE)) {
                 if (template == null) {
-                    LOGGER.errorLog("Category template could not be copied");
+                    LoggerManager.errorLog("Category template could not be copied");
                     return Optional.empty();
                 }
                 Files.copy(template, filePath.get());
             } catch (IOException e) {
-                LOGGER.errorLog("Could not create file for category " + id + " at " + filePath.get() + ": " + e.getMessage());
+                LoggerManager.errorLog("Could not create file for category " + id + " at " + filePath.get() + ": " + e.getMessage());
                 return Optional.empty();
             }
         }
@@ -78,7 +77,7 @@ public final class CategoryConfigLoader {
         List<Map<?, ?>> entries = yaml.getMapList("entries");
 
         if (entries.isEmpty()) {
-            LOGGER.errorLog("Could not find any entries in " + filePath);
+            LoggerManager.errorLog("Could not find any entries in " + filePath);
             return null;
         }
 
@@ -91,12 +90,12 @@ public final class CategoryConfigLoader {
 
             EntryType entryType = ConfigHelper.readType(entry.get("type"));
             if (entryType == null) {
-                LOGGER.errorLog(entryString + " error in type");
+                LoggerManager.errorLog(entryString + " error in type");
                 continue;
             }
 
             if (entryType == EntryType.CATEGORY) {
-                LOGGER.errorLog(entryString + " type is invalid");
+                LoggerManager.errorLog(entryString + " type is invalid");
                 continue;
             }
 
@@ -113,19 +112,19 @@ public final class CategoryConfigLoader {
                 String id = ConfigHelper.readStringStrict(entry.get("id"));
 
                 if (id == null) {
-                    LOGGER.errorLog(entryString + " error in id");
+                    LoggerManager.errorLog(entryString + " error in id");
                     continue;
                 }
 
                 id = id.toLowerCase(Locale.ROOT);
 
                 if (id.equals("exit")) {
-                    LOGGER.errorLog(entryString + " id is not allowed to be exit");
+                    LoggerManager.errorLog(entryString + " id is not allowed to be exit");
                     continue;
                 }
 
                 if (localItems.containsKey(id) || parentId.equals(id)) {
-                    LOGGER.errorLog(entryString + " this id already exists");
+                    LoggerManager.errorLog(entryString + " this id already exists");
                     continue;
                 }
 

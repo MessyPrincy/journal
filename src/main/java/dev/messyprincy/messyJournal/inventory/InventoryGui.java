@@ -25,7 +25,6 @@ public class InventoryGui implements InventoryHolder {
     private final Map<Integer, JournalEntry> items;
     private final Player player;
     private final InventoryGui parentInventory;
-    private static final LoggerManager LOGGER = new LoggerManager();
 
     private static final int EXIT_SLOT = 8;
     private static final String LOCKED_MATERIAL = "GUNPOWDER";
@@ -49,7 +48,7 @@ public class InventoryGui implements InventoryHolder {
         for (Displayable entry : entries) {
             int entrySlot = entry.getSlot();
             if (entrySlot == EXIT_SLOT) {
-                LOGGER.errorLog("Tried to overwrite the exit item. Skipping entry");
+                LoggerManager.errorLog("Tried to overwrite the exit item. Skipping entry");
                 continue;
             }
 
@@ -93,7 +92,7 @@ public class InventoryGui implements InventoryHolder {
         Material itemMaterial = Material.matchMaterial(material);
 
         if (itemMaterial == null) {
-            LOGGER.errorLog(material + " is not a valid material. Falling back to default");
+            LoggerManager.errorLog(material + " is not a valid material. Falling back to default");
             itemMaterial = Material.DIRT;
         }
 

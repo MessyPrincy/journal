@@ -13,7 +13,6 @@ import java.util.*;
 
 public class JournalConfigManager {
     private static volatile JournalConfig journalConfig = new JournalConfig(List.of(), Map.of(), Map.of());
-    private static final LoggerManager LOGGER = new LoggerManager();
 
     public static JournalConfig get() {
         return journalConfig;
@@ -29,7 +28,7 @@ public class JournalConfigManager {
         List<Map<?, ?>> entries = yaml.getMapList("entries");
 
         if (entries.isEmpty()) {
-            LOGGER.errorLog("Could not find entries in journal.yml");
+            LoggerManager.errorLog("Could not find entries in journal.yml");
             return;
         }
 
@@ -42,12 +41,12 @@ public class JournalConfigManager {
 
             EntryType entryType = ConfigHelper.readType(entry.get("type"));
             if (entryType == null) {
-                LOGGER.errorLog(entryString + " error in type");
+                LoggerManager.errorLog(entryString + " error in type");
                 continue;
             }
 
             if (entryType == EntryType.ITEM) {
-                LOGGER.errorLog(entryString + " type is invalid");
+                LoggerManager.errorLog(entryString + " type is invalid");
                 continue;
             }
 
@@ -64,19 +63,19 @@ public class JournalConfigManager {
                 String id = ConfigHelper.readStringStrict(entry.get("id"));
 
                 if (id == null) {
-                    LOGGER.errorLog(entryString + " error in id");
+                    LoggerManager.errorLog(entryString + " error in id");
                     continue;
                 }
 
                 id = id.toLowerCase(Locale.ROOT);
 
                 if (id.equals("exit")) {
-                    LOGGER.errorLog(entryString + " id is not allowed to be exit");
+                    LoggerManager.errorLog(entryString + " id is not allowed to be exit");
                     continue;
                 }
 
                 if (journalConfig.categories().containsKey(id) || localCategory.containsKey(id)) {
-                    LOGGER.errorLog(entryString + " this id already exists");
+                    LoggerManager.errorLog(entryString + " this id already exists");
                     continue;
                 }
 

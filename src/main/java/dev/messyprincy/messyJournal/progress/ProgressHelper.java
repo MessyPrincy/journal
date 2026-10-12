@@ -51,10 +51,7 @@ public class ProgressHelper {
             return;
         }
 
-        String identifier = createIdentifier(item);
-
-        unlockedSet.add(identifier);
-
+        unlockedSet.add(createIdentifier(item));
         pdc.set(key, PersistentDataType.LIST.strings(), unlockedSet.stream().toList());
     }
 }
