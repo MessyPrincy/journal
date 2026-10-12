@@ -8,6 +8,7 @@ import dev.messyprincy.messyJournal.logging.LoggerManager;
 import dev.messyprincy.messyJournal.interfaces.JournalEntry;
 import dev.messyprincy.messyJournal.progress.PlayerProgressHelper;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -29,7 +30,7 @@ public class InventoryGui implements InventoryHolder {
     private static final int EXIT_SLOT = 8;
     private static final String LOCKED_MATERIAL = "GUNPOWDER";
     private static final String LOCKED_NAME = "&c&lLocked";
-    private static final List<String> LOCKED_LORE = List.of("&cUnlock to view entry");
+    private static final List<String> LOCKED_LORE = List.of("&7Unlock to view entry");
 
     public InventoryGui(String name, int size, Player player) {
         this(name, size, player , null);
@@ -101,13 +102,13 @@ public class InventoryGui implements InventoryHolder {
 
         if (name != null) {
             Component displayName = LegacyComponentSerializer.legacyAmpersand().deserialize(name);
-            meta.customName(displayName);
+            meta.customName(displayName.decoration(TextDecoration.ITALIC, false));
         }
 
         if (lore != null && !lore.isEmpty()) {
             List<Component> loreText = new ArrayList<>();
             for (String line : lore) {
-                Component loreLine = LegacyComponentSerializer.legacyAmpersand().deserialize(line);
+                Component loreLine = LegacyComponentSerializer.legacyAmpersand().deserialize(line).decoration(TextDecoration.ITALIC, false);
                 loreText.add(loreLine);
             }
 
