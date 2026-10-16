@@ -1,9 +1,10 @@
 package dev.messyprincy.messyJournal.progress;
 
 import dev.messyprincy.messyJournal.MessyJournal;
+import dev.messyprincy.messyJournal.inventory.displayables.JournalItem;
 import org.bukkit.NamespacedKey;
 
-public final class ProgressKeys {
+public final class ProgressUtils {
     private static NamespacedKey playerKey;
     private static NamespacedKey itemKey;
 
@@ -18,5 +19,12 @@ public final class ProgressKeys {
 
     public static NamespacedKey getItemKey() {
         return itemKey;
+    }
+
+    public static String createIdentifier(JournalItem item) {
+        String category = item.getParent().getId();
+        String id = item.getId();
+
+        return category + "." + id;
     }
 }

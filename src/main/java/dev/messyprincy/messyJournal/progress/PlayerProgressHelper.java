@@ -1,9 +1,7 @@
 package dev.messyprincy.messyJournal.progress;
 
-import dev.messyprincy.messyJournal.MessyJournal;
 import dev.messyprincy.messyJournal.enums.DiscoverType;
 import dev.messyprincy.messyJournal.inventory.displayables.JournalItem;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
@@ -23,16 +21,9 @@ public class PlayerProgressHelper {
     }
 
     private void readUnlocks() {
-        List<String> unlocks = pdc.getOrDefault(ProgressKeys.getPlayerKey(), PersistentDataType.LIST.strings(), List.of());
+        List<String> unlocks = pdc.getOrDefault(ProgressUtils.getPlayerKey(), PersistentDataType.LIST.strings(), List.of());
 
         unlockedSet.addAll(unlocks);
-    }
-
-    public String createIdentifier(JournalItem item) {
-        String category = item.getParent().getId();
-        String id = item.getId();
-
-        return category + "." + id;
     }
 
     public boolean isUnlocked(JournalItem item) {
@@ -40,7 +31,7 @@ public class PlayerProgressHelper {
             return true;
         }
 
-        return isUnlocked(createIdentifier(item));
+        return isUnlocked(ProgressUtils.createIdentifier(item));
     }
 
     public boolean isUnlocked(String identifier) {
@@ -53,8 +44,8 @@ public class PlayerProgressHelper {
             return false;
         }
 
-        unlockedSet.add(createIdentifier(item));
-        pdc.set(ProgressKeys.getPlayerKey(), PersistentDataType.LIST.strings(), unlockedSet.stream().toList());
+        unlockedSet.add(ProgressUtils.createIdentifier(item));
+        pdc.set(ProgressUtils.getPlayerKey(), PersistentDataType.LIST.strings(), unlockedSet.stream().toList());
         return true;
     }
 

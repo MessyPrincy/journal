@@ -8,6 +8,7 @@ import dev.messyprincy.messyJournal.inventory.config.JournalConfigManager;
 import dev.messyprincy.messyJournal.inventory.displayables.JournalItem;
 import dev.messyprincy.messyJournal.logging.LoggerManager;
 import dev.messyprincy.messyJournal.progress.PlayerProgressHelper;
+import dev.messyprincy.messyJournal.progress.ProgressUtils;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
@@ -17,11 +18,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
+import java.util.List;
 import java.util.Locale;
 
 public class JournalCommands {
     public LiteralCommandNode<CommandSourceStack> build() {
         return Commands.literal("journal")
+                .requires(source -> source.getSender().isOp())
                 .executes(context -> {
                     CommandSender sender = context.getSource().getSender();
 
@@ -42,14 +45,7 @@ public class JournalCommands {
                     return Command.SINGLE_SUCCESS;
                 })
                 .then(Commands.literal("unlock")
-                        .then(Commands.argument("target", ArgumentTypes.player())
-                                .suggests(((context, builder) -> {
-                                    Bukkit.getOnlinePlayers().stream()
-                                            .map(Player::getName)
-                                            .filter(name -> name.toLowerCase(Locale.ROOT).startsWith(builder.getRemainingLowerCase()))
-                                            .forEach(builder::suggest);
-                                    return builder.buildFuture();
-                                }))
+                        .then(Commands.argument("targets", ArgumentTypes.player())
                                 .then(Commands.argument("category", StringArgumentType.word())
                                         .suggests((context, builder) -> {
                                             JournalConfigManager.get().categories().keySet().stream()
@@ -65,17 +61,13 @@ public class JournalCommands {
                                                     return builder.buildFuture();
                                                 })
                                                 .executes(context -> {
-                                                    Player target = context.getArgument("target", PlayerSelectorArgumentResolver.class).resolve(context.getSource()).getFirst();
+                                                    PlayerSelectorArgumentResolver resolver =
+                                                            context.getArgument("target", PlayerSelectorArgumentResolver.class);
+                                                    List<Player> targets = resolver.resolve(context.getSource());
                                                     String category = context.getArgument("category", String.class);
                                                     String entry = context.getArgument("entry", String.class);
 
                                                     CommandSender sender = context.getSource().getSender();
-
-                                                    if (!(sender.isOp())) {
-                                                        LoggerManager.sendErrorMessage(sender, "You need to be op to execute this command");
-
-                                                        return Command.SINGLE_SUCCESS;
-                                                    }
 
                                                     if (!(JournalConfigManager.getCategoryConfig(category).items().get(entry) instanceof JournalItem item)) {
                                                         LoggerManager.sendErrorMessage(sender, "Error finding the entry");
@@ -83,15 +75,18 @@ public class JournalCommands {
                                                         return Command.SINGLE_SUCCESS;
                                                     }
 
-                                                    PlayerProgressHelper progress = new PlayerProgressHelper(target);
-                                                    progress.unlockItem(item);
+                                                    for (Player targetPlayer : targets) {
+                                                        PlayerProgressHelper progress = new PlayerProgressHelper(targetPlayer);
+                                                        progress.unlockItem(item);
 
-                                                    LoggerManager.sendSuccessMessage(sender, "Successfully unlocked " + progress.createIdentifier(item) + " for " + target.getName());
-                                                    LoggerManager.sendUnlockMessage(
-                                                            target,
-                                                            item.getName(),
-                                                            item.getParent().getName()
-                                                    );
+                                                        LoggerManager.sendUnlockMessage(
+                                                                targetPlayer,
+                                                                item.getName(),
+                                                                item.getParent().getName()
+                                                        );
+                                                    }
+
+                                                    LoggerManager.sendSuccessMessage(sender, "Successfully unlocked " + ProgressUtils.createIdentifier(item) + " for " + targets.size() + " players");
                                                     return Command.SINGLE_SUCCESS;
                                                 }))
                                 ))

@@ -4,7 +4,7 @@ import dev.messyprincy.messyJournal.commands.JournalCommands;
 import dev.messyprincy.messyJournal.listeners.InventoryListener;
 import dev.messyprincy.messyJournal.inventory.config.JournalConfigManager;
 import dev.messyprincy.messyJournal.listeners.PlayerInteractListener;
-import dev.messyprincy.messyJournal.progress.ProgressKeys;
+import dev.messyprincy.messyJournal.progress.ProgressUtils;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -18,7 +18,7 @@ public final class MessyJournal extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
-        ProgressKeys.init();
+        ProgressUtils.init();
 
         saveResource(JOURNAL, false);
         saveResource(CATEGORY_TEMPLATE, false);

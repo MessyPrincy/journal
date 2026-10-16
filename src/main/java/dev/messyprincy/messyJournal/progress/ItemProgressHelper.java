@@ -15,7 +15,7 @@ public class ItemProgressHelper {
     }
 
     public String getIdentifier() {
-        return pdcView.getOrDefault(ProgressKeys.getItemKey(), PersistentDataType.STRING, "");
+        return pdcView.getOrDefault(ProgressUtils.getItemKey(), PersistentDataType.STRING, "");
     }
 
     public JournalItem getJournalItem() {
