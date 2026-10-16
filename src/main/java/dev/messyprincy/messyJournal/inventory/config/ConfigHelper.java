@@ -157,7 +157,7 @@ public final class ConfigHelper {
             return null;
         }
 
-        string = string.toUpperCase(Locale.ROOT);
+        string = string.toLowerCase(Locale.ROOT);
         NamespacedKey key = NamespacedKey.fromString(string);
         if (key == null) {
             LoggerManager.errorLog(verified + ": '" + string + "' is not a valid namespaced key");
