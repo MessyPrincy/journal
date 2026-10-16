@@ -86,7 +86,7 @@ public class JournalCommands {
                                                         );
                                                     }
 
-                                                    LoggerManager.sendSuccessMessage(sender, "Successfully unlocked " + ProgressUtils.createIdentifier(item) + " for " + targets.size() + " players");
+                                                    LoggerManager.sendSuccessMessage(sender, "Successfully unlocked " + ProgressUtils.createIdentifier(item) + " for " + targets.size() + " player(s)");
                                                     return Command.SINGLE_SUCCESS;
                                                 }))
                                 ))
