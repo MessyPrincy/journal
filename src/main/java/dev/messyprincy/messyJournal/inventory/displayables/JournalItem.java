@@ -43,6 +43,9 @@ public class JournalItem implements JournalEntry {
 
     @Override
     public String getName() {
+        if (name == null) {
+            return id;
+        }
         return name;
     }
 

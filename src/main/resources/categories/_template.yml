@@ -1,14 +1,27 @@
-# How to create items:
+# How to create entries:
+#
 # type:               ITEM or FILL
-# id:                 ITEM only. Must be unique, lowercase, no spaces.
+# id:                 ITEM only. Must be unique, lowercase, no spaces, no dots.
 # material:           A valid Minecraft material name, e.g. PAPER
 # name:               Display name. Supports "&" color codes. Always keep the quotes.
 # lore:               List of lines under the name. Use [] for none.
+#                     Always use the list form, a plain string is ignored.
 # slots:              List of inventory slots, 0 to 53. Slot 8 is reserved for the exit button.
 #                     ITEM type must only have one slot.
-# unlockedByDefault:  A boolean that states whether the entry is unlocked by default or not.
-# discovered_on:      COMMAND or INTERACT
-#                     Will default to COMMAND
+# unlockedByDefault:  true or false. If true, the entry is visible from the start.
+#
+# discovery:          ITEM only, optional. How the entry gets unlocked.
+#                     If the whole section is missing, it defaults to type COMMAND.
+#   type:             COMMAND, INTERACT or ADVANCEMENT
+#                       COMMAND:     only unlocked with /journal unlock. "key" is ignored.
+#                       INTERACT:    unlocked by interacting with an item that carries
+#                                    this entry's tag. "key" is ignored.
+#                       ADVANCEMENT: unlocked when the player completes an advancement.
+#                                    "key" is required.
+#   key:              ADVANCEMENT only. The advancement id in namespace:path form,
+#                     e.g. "minecraft:story/mine_stone".
+#                     If it is missing or invalid, an error is logged and the
+#                     entry falls back to COMMAND.
 
 entries:
   - type: FILL

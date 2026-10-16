@@ -6,6 +6,7 @@ import dev.messyprincy.messyJournal.interfaces.JournalEntry;
 import dev.messyprincy.messyJournal.inventory.displayables.JournalCategory;
 import dev.messyprincy.messyJournal.inventory.displayables.JournalFill;
 import dev.messyprincy.messyJournal.logging.LoggerManager;
+import dev.messyprincy.messyJournal.progress.AdvancementProgressHelper;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -39,9 +40,8 @@ public class JournalConfigManager {
             Map<?, ?> entry = entries.get(i);
             String entryString = ("Entry #" + (i+1));
 
-            EntryType entryType = ConfigHelper.readEntryType(entry.get("type"));
+            EntryType entryType = ConfigHelper.readEntryType(entryString, entry.get("type"));
             if (entryType == null) {
-                LoggerManager.errorLog(entryString + " error in type");
                 continue;
             }
 
@@ -64,10 +64,9 @@ public class JournalConfigManager {
                             slot));
                 }
             } else if (entryType.equals(EntryType.CATEGORY)) {
-                String id = ConfigHelper.readStringStrict(entry.get("id"));
+                String id = ConfigHelper.readStringStrict(entryString, entry.get("id"));
 
                 if (id == null) {
-                    LoggerManager.errorLog(entryString + " error in id");
                     continue;
                 }
 

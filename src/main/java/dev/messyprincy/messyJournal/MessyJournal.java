@@ -1,6 +1,7 @@
 package dev.messyprincy.messyJournal;
 
 import dev.messyprincy.messyJournal.commands.JournalCommands;
+import dev.messyprincy.messyJournal.listeners.AdvancementListener;
 import dev.messyprincy.messyJournal.listeners.InventoryListener;
 import dev.messyprincy.messyJournal.inventory.config.JournalConfigManager;
 import dev.messyprincy.messyJournal.listeners.PlayerInteractListener;
@@ -27,6 +28,7 @@ public final class MessyJournal extends JavaPlugin {
 
         this.getServer().getPluginManager().registerEvents(new InventoryListener(), this);
         this.getServer().getPluginManager().registerEvents(new PlayerInteractListener(), this);
+        this.getServer().getPluginManager().registerEvents(new AdvancementListener(), this);
         getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event -> {
             event.registrar().register(new JournalCommands().build());
         });

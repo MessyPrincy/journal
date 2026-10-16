@@ -4,6 +4,7 @@ import dev.messyprincy.messyJournal.MessyJournal;
 import dev.messyprincy.messyJournal.enums.DiscoverType;
 import dev.messyprincy.messyJournal.enums.EntryType;
 import dev.messyprincy.messyJournal.logging.LoggerManager;
+import org.bukkit.NamespacedKey;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -26,32 +27,33 @@ public final class ConfigHelper {
         return Optional.of(categoryFilePath);
     }
 
-    public static String readString(Object object) {
+    public static String readString(String verified, Object object) {
         if (object == null) {
+            LoggerManager.errorLog(verified + " is null");
             return null;
         }
 
         return String.valueOf(object);
     }
 
-    public static String readStringStrict(Object object) {
-        if (object == null) {
+    public static String readStringStrict(String verified, Object object) {
+        String string = readString(verified, object);
+        if  (string == null) {
             return null;
         }
 
-        String string = String.valueOf(object);
         string = string.trim();
 
         if (string.isEmpty()) {
+            LoggerManager.errorLog(verified + " is empty");
             return null;
         }
 
         return string;
     }
 
-    public static DiscoverType readDiscoverType(Object object) {
-        String string = readStringStrict(object);
-
+    public static DiscoverType readDiscoverType(String verified, Object object) {
+        String string = readStringStrict(verified, object);
         if (string == null) {
             return null;
         }
@@ -61,12 +63,13 @@ public final class ConfigHelper {
         try {
             return DiscoverType.valueOf(string);
         } catch (IllegalArgumentException _) {
+            LoggerManager.errorLog(verified + ": '" + string + "' is not a valid DiscoverType");
             return null;
         }
     }
 
-    public static EntryType readEntryType(Object object) {
-        String string = readStringStrict(object);
+    public static EntryType readEntryType(String verified, Object object) {
+        String string = readStringStrict(verified, object);
 
         if (string == null) {
             return null;
@@ -77,11 +80,12 @@ public final class ConfigHelper {
         try {
             return EntryType.valueOf(string);
         } catch (IllegalArgumentException _) {
+            LoggerManager.errorLog(verified + " is not a valid EntryType");
             return null;
         }
     }
 
-    public static List<String> readLore(Object object) {
+    public static List<String> readList(String verified, Object object) {
         if (!(object instanceof List<?> objectList)) {
             return List.of();
         }
@@ -89,7 +93,7 @@ public final class ConfigHelper {
         List<String> list = new ArrayList<>();
 
         for (Object entry : objectList) {
-            String string = readStringStrict(entry);
+            String string = readStringStrict(verified, entry);
 
             if (string == null) {
                 continue;
@@ -101,7 +105,15 @@ public final class ConfigHelper {
         return List.copyOf(list);
     }
 
-    public static List<Integer> readSlots(Object object) {
+    public static Map<?, ?> readSection(Object object) {
+        if (object instanceof Map<?, ?> map) {
+            return map;
+        }
+
+        return Map.of();
+    }
+
+    public static List<Integer> readSlots(String verified, Object object) {
         if (!(object instanceof List<?> objectList)) {
             return List.of();
         }
@@ -109,7 +121,7 @@ public final class ConfigHelper {
         List<Integer> list = new ArrayList<>();
 
         for (Object entry : objectList) {
-            String string = readStringStrict(entry);
+            String string = readStringStrict(verified, entry);
 
             if (string == null) {
                 continue;
@@ -118,7 +130,7 @@ public final class ConfigHelper {
             try {
                 int integer = Integer.parseInt(string);
 
-                if ((integer < 0 || integer > 53)) {
+                if (integer > 0 && integer < 53) {
                     continue;
                 }
 
@@ -139,23 +151,32 @@ public final class ConfigHelper {
         return bool;
     }
 
-    public static ParsedEntry validateEntry(Map<?, ?> entry, String entryString) {
-        String material = ConfigHelper.readStringStrict(entry.get("material"));
-        if (material == null) {
-            LoggerManager.errorLog(entryString + " is missing a material");
+    public static NamespacedKey readNamespacedKey(String verified, Object object) {
+        String string = readStringStrict(verified, object);
+        if (string == null) {
             return null;
         }
 
-        String name = ConfigHelper.readString(entry.get("name"));
-        if (name == null) {
-            LoggerManager.errorLog(entryString + " missing name. Defaulting to block name");
+        string = string.toUpperCase(Locale.ROOT);
+        NamespacedKey key = NamespacedKey.fromString(string);
+        if (key == null) {
+            LoggerManager.errorLog(verified + ": '" + string + "' is not a valid namespaced key");
+        }
+        return key;
+    }
+
+    public static ParsedEntry validateEntry(Map<?, ?> entry, String entryString) {
+        String material = ConfigHelper.readStringStrict(entryString, entry.get("material"));
+        if (material == null) {
+            return null;
         }
 
-        List<String> lore = ConfigHelper.readLore(entry.get("lore"));
+        String name = ConfigHelper.readString(entryString, entry.get("name"));
 
-        List<Integer> slots = ConfigHelper.readSlots(entry.get("slots"));
+        List<String> lore = ConfigHelper.readList(entryString, entry.get("lore"));
+
+        List<Integer> slots = ConfigHelper.readSlots(entryString, entry.get("slots"));
         if (slots.isEmpty()) {
-            LoggerManager.errorLog(entryString + " error in slots");
             return null;
         }
 

@@ -7,6 +7,8 @@ import dev.messyprincy.messyJournal.interfaces.JournalEntry;
 import dev.messyprincy.messyJournal.inventory.displayables.JournalFill;
 import dev.messyprincy.messyJournal.inventory.displayables.JournalItem;
 import dev.messyprincy.messyJournal.logging.LoggerManager;
+import dev.messyprincy.messyJournal.progress.AdvancementProgressHelper;
+import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
@@ -89,9 +91,8 @@ public final class CategoryConfigLoader {
             Map<?, ?> entry = entries.get(i);
             String entryString = ("Entry #" + (i + 1) + " in " + category.getKey());
 
-            EntryType entryType = ConfigHelper.readEntryType(entry.get("type"));
+            EntryType entryType = ConfigHelper.readEntryType(entryString, entry.get("type"));
             if (entryType == null) {
-                LoggerManager.errorLog(entryString + " error in type");
                 continue;
             }
 
@@ -114,10 +115,9 @@ public final class CategoryConfigLoader {
                             slot));
                 }
             } else if (entryType.equals(EntryType.ITEM)) {
-                String id = ConfigHelper.readStringStrict(entry.get("id".toLowerCase(Locale.ROOT)));
+                String id = ConfigHelper.readStringStrict(entryString, entry.get("id".toLowerCase(Locale.ROOT)));
 
                 if (id == null) {
-                    LoggerManager.errorLog(entryString + " error in id");
                     continue;
                 }
 
@@ -133,13 +133,17 @@ public final class CategoryConfigLoader {
 
                 boolean unlockedByDefault = ConfigHelper.readBoolean(entry.get("unlockedByDefault"));
 
-                DiscoverType discoverType = ConfigHelper.readDiscoverType(entry.get("discovered_on"));
-                if (discoverType == null) {
-                    LoggerManager.errorLog(entryString + " error in discovered_on, setting to default");
-                    discoverType = DiscoverType.COMMAND;
+                Map<?, ?> discovery = ConfigHelper.readSection(entry.get("discovery"));
+                DiscoverType discoverType = DiscoverType.COMMAND;
+                if (!discovery.isEmpty()) {
+                    DiscoverType parsed = ConfigHelper.readDiscoverType(entryString, discovery.get("type"));
+
+                    if (parsed != null) {
+                        discoverType = parsed;
+                    }
                 }
 
-                localItems.put(id, new JournalItem(
+                JournalItem item = new JournalItem(
                         id,
                         parsedEntry.material(),
                         parsedEntry.name(),
@@ -147,7 +151,18 @@ public final class CategoryConfigLoader {
                         parsedEntry.slots().getFirst(),
                         category.getValue(),
                         unlockedByDefault,
-                        discoverType));
+                        discoverType);
+
+                if (discoverType == DiscoverType.ADVANCEMENT) {
+                    NamespacedKey key = ConfigHelper.readNamespacedKey(entryString, discovery.get("key"));
+                    if (key == null) {
+                        continue;
+                    }
+
+                    AdvancementProgressHelper.register(key, item);
+                }
+
+                localItems.put(id, item);
             }
 
         }
