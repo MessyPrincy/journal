@@ -115,7 +115,7 @@ public final class CategoryConfigLoader {
                             slot));
                 }
             } else if (entryType.equals(EntryType.ITEM)) {
-                String id = ConfigHelper.readStringStrict(entryString, entry.get("id".toLowerCase(Locale.ROOT)));
+                String id = ConfigHelper.readStringStrict(entryString + " id's", entry.get("id".toLowerCase(Locale.ROOT)));
 
                 if (id == null) {
                     continue;

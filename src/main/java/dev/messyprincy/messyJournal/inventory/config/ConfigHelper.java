@@ -45,7 +45,7 @@ public final class ConfigHelper {
         string = string.trim();
 
         if (string.isEmpty()) {
-            LoggerManager.errorLog(verified + " is empty");
+            LoggerManager.errorLog(verified + " string is empty");
             return null;
         }
 
@@ -53,7 +53,7 @@ public final class ConfigHelper {
     }
 
     public static DiscoverType readDiscoverType(String verified, Object object) {
-        String string = readStringStrict(verified, object);
+        String string = readStringStrict((verified + " discovery's"), object);
         if (string == null) {
             return null;
         }
@@ -69,7 +69,7 @@ public final class ConfigHelper {
     }
 
     public static EntryType readEntryType(String verified, Object object) {
-        String string = readStringStrict(verified, object);
+        String string = readStringStrict(verified + " entry's", object);
 
         if (string == null) {
             return null;
@@ -85,7 +85,7 @@ public final class ConfigHelper {
         }
     }
 
-    public static List<String> readList(String verified, Object object) {
+    public static List<String> readLore(String verified, Object object) {
         if (!(object instanceof List<?> objectList)) {
             return List.of();
         }
@@ -93,8 +93,7 @@ public final class ConfigHelper {
         List<String> list = new ArrayList<>();
 
         for (Object entry : objectList) {
-            String string = readStringStrict(verified, entry);
-
+            String string = readString(verified + " lore's", entry);
             if (string == null) {
                 continue;
             }
@@ -121,21 +120,23 @@ public final class ConfigHelper {
         List<Integer> list = new ArrayList<>();
 
         for (Object entry : objectList) {
-            String string = readStringStrict(verified, entry);
+            String string = readStringStrict(verified + " slot's", entry);
 
             if (string == null) {
                 continue;
             }
 
             try {
-                int integer = Integer.parseInt(string);
+                int slot = Integer.parseInt(string);
 
-                if (integer > 0 && integer < 53) {
+                if (!(slot >= 0 && slot <= 53)) {
+                    LoggerManager.errorLog(verified + ": invalid slot at " + slot);
                     continue;
                 }
 
-                list.add(integer);
+                list.add(slot);
             } catch (NumberFormatException _) {
+                LoggerManager.errorLog(verified + ": invalid format");
             }
 
         }
@@ -152,7 +153,7 @@ public final class ConfigHelper {
     }
 
     public static NamespacedKey readNamespacedKey(String verified, Object object) {
-        String string = readStringStrict(verified, object);
+        String string = readStringStrict(verified + "key's", object);
         if (string == null) {
             return null;
         }
@@ -166,14 +167,14 @@ public final class ConfigHelper {
     }
 
     public static ParsedEntry validateEntry(Map<?, ?> entry, String entryString) {
-        String material = ConfigHelper.readStringStrict(entryString, entry.get("material"));
+        String material = ConfigHelper.readStringStrict(entryString + " material's", entry.get("material"));
         if (material == null) {
             return null;
         }
 
-        String name = ConfigHelper.readString(entryString, entry.get("name"));
+        String name = ConfigHelper.readString(entryString + " name's", entry.get("name"));
 
-        List<String> lore = ConfigHelper.readList(entryString, entry.get("lore"));
+        List<String> lore = ConfigHelper.readLore(entryString, entry.get("lore"));
 
         List<Integer> slots = ConfigHelper.readSlots(entryString, entry.get("slots"));
         if (slots.isEmpty()) {

@@ -38,7 +38,7 @@ public class JournalConfigManager {
 
         for (int i = 0; i < entries.size(); i++) {
             Map<?, ?> entry = entries.get(i);
-            String entryString = ("Entry #" + (i+1));
+            String entryString = ("Entry #" + (i+1) + " in journal");
 
             EntryType entryType = ConfigHelper.readEntryType(entryString, entry.get("type"));
             if (entryType == null) {
@@ -64,7 +64,7 @@ public class JournalConfigManager {
                             slot));
                 }
             } else if (entryType.equals(EntryType.CATEGORY)) {
-                String id = ConfigHelper.readStringStrict(entryString, entry.get("id"));
+                String id = ConfigHelper.readStringStrict(entryString + " id's", entry.get("id"));
 
                 if (id == null) {
                     continue;
